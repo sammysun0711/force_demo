@@ -1,0 +1,1 @@
+./depthwise_conv3d 2>&1 | tee run_depthwise_conv3d.log
