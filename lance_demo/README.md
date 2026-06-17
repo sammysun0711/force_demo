@@ -2,11 +2,18 @@
 
 ![Lance × vLLM-Omni Gradio unified demo UI](demo_example.png)
 
-This demo provide a interactive an interactive **Gradio** UI that runs all **Lance** multimodal tasks in one place.
+This demo provide a interactive an interactive **Gradio** UI that runs all **Lance** multimodal tasks in one place: 
+- `Video Generation`
+- `Image to Video`
+- `Video Edit`
+- `Video Understanding`
+- `Image Generation` 
+- `Image Edit`
+- `Image Understanding`
 
 | Path | Role |
 |------|------|
-| [`prepare_env.sh`](prepare_env.sh) | Clones [`vllm-omni`](https://github.com/sammysun0711/vllm-omni) on branch **`lance_demo`** into `./vllm-omni` (idempotent if you remove the clone first). |
+| [`prepare_env.sh`](prepare_env.sh) | Clones [`vllm-omni`](https://github.com/sammysun0711/vllm-omni) on branch **`lance_demo`** into `./vllm-omni` |
 | [`vllm-omni/examples/offline_inference/lance/gradio_demo.py`](vllm-omni/examples/offline_inference/lance/gradio_demo.py) | Unified Gradio app: text/image/video generation, editing, and video/image understanding. |
 
 Upstream references: [Lance](https://github.com/bytedance/Lance) · [vLLM-Omni](https://github.com/vllm-project/vllm-omni) · [Lance on Hugging Face](https://huggingface.co/bytedance-research/Lance)
@@ -28,15 +35,6 @@ Upstream references: [Lance](https://github.com/bytedance/Lance) · [vLLM-Omni](
    bash prepare_env.sh
    ```
 
-2. **Optional — curated local assets** (relative to `gradio_demo.py`):
-
-   | Directory | Task | Contents |
-   |-----------|------|----------|
-   | `vllm-omni/examples/offline_inference/lance/assets/image_to_video/` | Image → Video | First-frame `.webp` files paired in code with long motion prompts (`00001.webp`, …). |
-   | `vllm-omni/examples/offline_inference/lance/assets/video_qa/` | Video understanding | `.mp4` clips paired with VQA / caption prompts (`vqa-001-opt.mp4`, …). |
-
-   Missing files are skipped; existing rows still load.
-
 ## Run the Gradio demo
 
 From the **`vllm-omni`** repo root (so imports resolve), with GPUs visible:
@@ -57,8 +55,6 @@ Useful flags (see `--help` on the script for the full list):
 | `--replicas-per-omni N` | Scale throughput with **N** replicas per Omni (**2×N** GPUs total with default SP layout). |
 | `--ulysses-degree K` | Ulysses sequence-parallel degree per Omni (**2×K** GPUs); **i2v is experimental** when `K>1` — prefer replicas for throughput. |
 | `--share` | Gradio public share link. |
-
-The UI exposes seven tasks (radio): video generation, video edit, **video understanding**, image-to-video, image generation, image edit, **image understanding**. Text-only presets (t2i / t2v) use full-width clickable blocks; other tasks use `gr.Examples` where media paths must sit under **`allowed_paths`** (the demo adds `--examples-root`, curated `assets/image_to_video`, `assets/video_qa`, and `/tmp/lance_demo_sources` when present).
 
 ## Layout summary
 
