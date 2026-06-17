@@ -2,7 +2,7 @@
 
 ![Lance × vLLM-Omni Gradio unified demo UI](demo_example.png)
 
-This demo provide a interactive an interactive **Gradio** UI that runs all **Lance** multimodal tasks in one place: 
+This demo provide an interactive **Gradio** UI that runs all **Lance** multimodal tasks in one place: 
 - `Video Generation`
 - `Image to Video`
 - `Video Edit`
