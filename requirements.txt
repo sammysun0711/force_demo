@@ -1,5 +1,6 @@
-# Required forJupyter notebooks under hipify_demo/ and hipblaslt_demo/
+# Required forJupyter notebooks for hipify and hipblaslt demo
 notebook>=7.0.0
 ipython>=8.0.0
 ipywidgets>=8.0.0
 pandas>=2.0.0
+jupyterlab_limit_output
