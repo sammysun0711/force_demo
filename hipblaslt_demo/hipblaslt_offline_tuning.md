@@ -5,32 +5,39 @@ End-to-end flow: **build** hipBLASLt clients → **capture** GEMM lines from inf
 ### Prerequisites (read once)
 
 - **ROCm** and a matching **GPU** (`HIP_VISIBLE_DEVICES` as needed).
-- **`hipblaslt-bench`** on `PATH` after building clients (Step 0). QuickTune README: `utilities/QuickTune/README.md`.
-- **CMake configure** for hipBLASLt may require **GTest** if tests are enabled: `libgtest-dev` / `libgmock-dev` (see Step 0), or configure with **`BUILD_TESTING=OFF`** if you maintain your own CMake flags.
+- **`hipblaslt-bench`** on `PATH` after **Step 0** (run [`prepare_env.sh`](prepare_env.sh) in `hipblaslt_demo/`). QuickTune README: `utilities/QuickTune/README.md`.
+- **CMake configure** for hipBLASLt may require **GTest** if tests are enabled: `libgtest-dev` / `libgmock-dev` (installed by `prepare_env.sh`), or configure with **`BUILD_TESTING=OFF`** if you maintain your own CMake flags.
 - **`gemm_tuning.py`** expects **`hipblaslt-bench` stdout** in a fixed shape; if tuning crashes inside `utils.parse_hipblaslt_output`, run the first line of `baseline_reproduce_commands.log` manually and check **stdout vs stderr** (see QuickTune troubleshooting in repo issues / prior analysis).
 
 ### Step 0: Prepare environment
 
-Adjust **`ROCM_BRANCH`**, **`GPU_ARCH`**, and **`REPO_ROOT`** to your machine.
+Run the demo helper **[`prepare_env.sh`](prepare_env.sh)** from the **`hipblaslt_demo/`** directory (same folder as this markdown). It:
+
+- creates **`${REPO_ROOT}`** (default: `~/workspace/bytedance/demo/force_demo/hipblaslt_demo`) if needed;
+- clones **`rocm-libraries`** when no checkout exists (branch **`${ROCM_BRANCH}`**, default `release/rocm-rel-7.2`);
+- installs **GTest / GMock** via `apt`;
+- runs **`./install.sh -c -n -a "${GPU_ARCH}" --skip_rocroller`** under `rocm-libraries/projects/hipblaslt`.
+
+Override defaults when your ROCm branch or GPU ISA differs:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `REPO_ROOT` | `~/workspace/bytedance/demo/force_demo/hipblaslt_demo` | Parent directory that will contain `rocm-libraries/` |
+| `ROCM_BRANCH` | `release/rocm-rel-7.2` | `git clone -b` for `rocm-libraries` |
+| `GPU_ARCH` | `gfx942` | Argument to `install.sh -a` (e.g. `gfx90a` on MI200-class) |
 
 ```bash
-export ROCM_BRANCH=release/rocm-rel-7.2
-export GPU_ARCH="gfx942"   # e.g. gfx942, gfx90a — match your hardware
-export REPO_ROOT="${REPO_ROOT:-$HOME/workspace/bytedance/demo/hipblaslt-tuning}"
-
-git clone https://github.com/ROCm/rocm-libraries -b "${ROCM_BRANCH}" "${REPO_ROOT}/rocm-libraries"
-cd "${REPO_ROOT}/rocm-libraries/projects/hipblaslt"
-
-sudo apt-get update && sudo apt-get install -y libgtest-dev libgmock-dev
-
-./install.sh -c -n -a "${GPU_ARCH}" --skip_rocroller
+cd /path/to/force_demo/hipblaslt_demo
+export GPU_ARCH=gfx942          # optional
+export ROCM_BRANCH=release/rocm-rel-7.2   # optional
+export REPO_ROOT=/path/to/force_demo/hipblaslt_demo   # optional
+bash prepare_env.sh
 ```
 
-After a successful build, add **hipblaslt-bench** to `PATH` (path matches a typical `install.sh` layout):
+The script ends by printing an **`export PATH=...`** line so **`hipblaslt-bench`** resolves (typical clients dir:  
+`${REPO_ROOT}/rocm-libraries/projects/hipblaslt/build/release/clients`). Run that `export` in any shell where you will capture logs or run QuickTune.
 
-```bash
-export PATH="${PATH}:${REPO_ROOT}/rocm-libraries/projects/hipblaslt/build/release/clients"
-```
+If you cannot use the script, the equivalent manual steps are: clone `rocm-libraries`, `cd` to `projects/hipblaslt`, install `libgtest-dev` / `libgmock-dev`, then run the same **`./install.sh`** line as in `prepare_env.sh`.
 
 ### Step 1: Collect hipBLASLt log from model inference
 
@@ -120,7 +127,7 @@ python3 run_model.py
 ### Notebook outline (for a future `hipblaslt_offline_tuning.ipynb`)
 
 1. **Markdown** — goal, prerequisites, pipeline diagram (log → unique → bench → `tuning.txt` → inference).
-2. **Code** — `os.environ` / `Path` / `REPO_ROOT`; optional `!` or `subprocess` to show `hipblaslt-bench --version`.
+2. **Markdown** — Step 0: run **[`prepare_env.sh`](prepare_env.sh)** from `hipblaslt_demo/` (same as `hipblaslt_offline_tuning.md`); **Code** — `os.environ` / `Path` / `REPO_ROOT`; optional `hipblaslt-bench --version`.
 3. **Markdown** — Step 1: log capture; **Code** — stub or `print` instructions if `run_model.py` is not in-repo.
 4. **Code** — `cd` QuickTune; run `gemm_tuning.py` with **`subprocess`** (long run: log tail from `output.log`, or stream stdout).
 5. **Code** — load **`tuning_result.csv`** / **`analysis.csv`** with **pandas**; small charts (optional).

@@ -2,6 +2,14 @@
 
 ROCm demo repository for the Force Event, including **ROCm developer tools** and a **Lance** deployment walkthrough:
 
+**Python (notebooks):** from this directory, install shared Jupyter dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+See [`requirements.txt`](requirements.txt) (`notebook`, `ipython`, `ipywidgets`, `pandas`).
+
 - [HIPIFY](https://rocm.docs.amd.com/projects/HIPIFY/en/latest/index.html)
 - [hipBLASLt GEMM tuning](https://rocm.docs.amd.com/projects/hipBLASLt/en/latest/how-to/how-to-use-hipblaslt-offline-tuning.html)
 - [bytedance-research/Lance](https://huggingface.co/bytedance-research/Lance) multimodal model deployment demo.
